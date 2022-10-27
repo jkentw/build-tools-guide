@@ -16,7 +16,13 @@ body, html {
 /* source: https://www.w3schools.com/Css/css_navbar_vertical.asp */
 
 /* Create two columns/boxes that floats next to each other */
+td {
+  vertical-align: top;
+}
+
 nav {
+  position: sticky;
+  top: 0;
   float: left;
   background: white;
   padding: 20px;
