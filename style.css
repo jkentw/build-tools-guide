@@ -13,6 +13,8 @@ body, html {
   font-size: 30px;
 }
 
+/* source: https://www.w3schools.com/Css/css_navbar_vertical.asp */
+
 /* Create two columns/boxes that floats next to each other */
 nav {
   float: left;
@@ -24,7 +26,23 @@ nav {
 /* Style the list inside the menu */
 nav ul {
   list-style-type: none;
+  width: 200px;
+  margin: 0;
   padding: 0;
+  background-color: #f1f1f1;
+}
+
+li a {
+  display: block;
+  color: #000;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+/* Change the link color on hover */
+li a:hover {
+  background-color: #555;
+  color: white;
 }
 
 article {
