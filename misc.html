@@ -16,177 +16,89 @@
 
 <section>
 
-<!--Changing this nav bar will only affect this page; you have to modify every HTML file for consistency if you do.-->
-<!--That said, please don't change this nav bar without consulting the rest of the group first.-->
+<table>
+<tr>
+<td>
 <nav>
-<ul>
-  <li><a href="index.html">About This Guide</a></li>
-  <li><a href="what-are-build-tools.html">What Are Build Tools?</a></li>
-  <li><a href="setup.html">Setting Up</a></li>
-  <li><a href="compilers.html">Compilers</a></li>
-  <li><a href="makefiles.html">Makefiles</a></li>
-  <li><a href="cmake.html">CMake</a></li>
-  <li><a href="misc.html">Other Tools</a></li>
-  <li><a href="conclusion.html">Next Steps</a></li>
-</ul>
+  <ul>
+      <li><a href="index.html">About This Guide</a></li>
+      <li><a href="what-are-build-tools.html">What Are Build Tools?</a></li>
+      <li><a href="setup.html">Setting Up</a></li>
+      <li><a href="compilers.html">Compilers</a></li>
+      <li><a href="makefiles.html">Makefiles</a></li>
+      <li><a href="cmake.html">CMake</a></li>
+      <li><a href="misc.html">Other Tools</a></li>
+      <li><a href="conclusion.html">Next Steps</a></li>
+  </ul>
 </nav>
-
-<!--To build your webtext, copy the code snippet (provided below) and paste into the <body> section below this line.-->
-
+</td>
+<td>
 <article>
-<h2>Other tools</h2>
-  <h3>placeholder text</h3>
+<h2>Debuggers</h2>
+  <p>Debuggers are essential tools for effective programming, especially in low-level languages like C and C++. Debugging tools help you figure out where bugs and issues are in your program without having to use print statements. In this section, we'll be covering two prominent tools for command-line debugging: <i>GDB</i> and <i>Valgrind</i>.</p>
+<h2>GDB</h2>
+  <p>GDB (from GNU Debugger) is the GNU toolchain's dedicated debugger. GDB is most useful for tracking the execution of a program. It uses a system called <i>ptrace</i> to trace the execution of code, allowing you to change a process's memory and register while it's running.</p>
+<h3>Basics of GDB</h3>
+  <p>To get started, we'll examine some sample code for a basic Linked List that stores English words. We'll write code in small portions and use GDB to debug it as we go. We'll start with a simple method to create a new linked_list and we'll test that it works in main.</p>
+  <pre>
+<code>typdef struct ll_node {
+  struct ll_node* next;
+  char* word;
+} ll_node;
 
-  <h3>placeholder text</a>.</h3>
-</article>
+typedef struct linked_list {
+  ll_node* head;
+} word_list;
+
+linked_list* new_ll() {
+  linked_list* ll = malloc(sizeof(linked_list));
+  if (ll = NULL) return NULL;
+  ll->head = NULL;
+  return ll;
+}
+
+int main() {
+  linked_list* words = new_ll();
+}</code>
+</pre>
+<h3>Starting GDB</h3>
+<p>We use the <code>-g</code> flag when compiling, which tells the compiler to generate and retain debugging information in the executable. Then, we open the executable in gdb and use the command <code>r</code> to run it.</p>
+<pre>
+<samp>$ gcc ll.c -g -o ll
+$ gdb ll
+(gdb) r
+
+Program received signal SIGSEGV, Segmentation fault.
+0x000055555555517d in new_ll () at ll.c:16
+16		ll->head = NULL;</samp>
+</pre>
+<p>We get a segmentation fault error at line 16, which occurs when we try to access memory that we don't have access to. As <code>ll->head</code> is the only memory we try to access in this line, it's likely that <code>ll</code> points to the wrong place.</p>
+<h3>Breakpoints and Variables</h3>
+<p>To find where our code goes wrong, we can use breakpoints to view variables at various points in execution. We can start by using the <code>l</code> command, for list, to view the line numbers of our code. <code>l</code> will display the next 10 lines, while <code>l -</code> will display the previous 10. We'll check that malloc successfully allocated memory for our linked list structure by placing a breakpoint on line 14 with the <code>b</code> command and printing the value of <code>ll</code>.<p>
+<pre><samp>(gdb) b 14
+Breakpoint 2 at 0x555555555155: file ll.c, line 14.
+(gdb) r
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+
+Breakpoint 2, new_ll () at ll.c:14
+14		linked_list* ll = malloc(sizeof(linked_list));
+(gdb) p ll
+$1 = (linked_list *) 0x5555555551b0 <__libc_csu_init></samp></pre>
+<p>This tells use that <code>ll</code> has the value <code>0x5555555551b0</code>, which is a valid memory address. Place another breakpoint at line 16, where our error occurs and check its value there. Then, use the <code>c</code> command to continue execution.</p>
+<pre><samp>(gdb) b 16
+Breakpoint 2 at 0x555555555179: file ll.c, line 16.
+(gdb) c
+Continuing.
+
+Breakpoint 2, new_ll () at ll.c:16
+16		ll->head = NULL;
+(gdb) p ll
+$2 = (linked_list *) 0x0</samp></pre>
+<p>At this point, we see that <code>ll</code> has the value <code>0x0</code>, which is <code>NULL</code>.</p>
+</td>
+</tr>
+</table>
 </section>
-
-  <div id="logo">
-          <img src="fuego.jpg" alt="Pitt Fuego Flame" style="max-width:25%;max-height:25%;">
-          <p><b>generated by <a href="https://pitt-fuego.github.io/Pitt-Fuego-Coding-Tools/">Pitt Fuego</a></b></p>
-          <p><em>Why make a spark when you can light a fire?</em></p>
-</div>
-
-  </body>
-     </html>
-
-
-
-
-     <!--Code Snippets - Looking to add components? You've come to the right place. Copy code snippets from <div> to </div> and add to the body section. Adjust class properties on style.css.
-
-
-     ***Add Text Block***
-
-     (Format textblock using inline styling: text-align: left, center, justify, right; Format text: Italics: <em>italics</em>; Bold: <b>bold</b>; Link Website: <a href="link">LinkName</a>; Link Asset: <a href=filename.pdf>FileName</a>; Line Breaks: <br></br>)
-
-     (use <h3> header and <p> for longer content)
-
-     <div class="textblock" style="text-align: left">
-         <h2>Header</h2>
-         <h3>We recommend using our mobile-ready text sizing. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</h3>
-     </div>
-
-
-
-     ***Add Block Quote***
-
-     (Format text: Italics: <em>italics</em>; Bold: <b>bold</b>. For more stylings, find blockquote class on style.css)
-
-     <div class="blockquote" style="text-align: center">
-         <h2>Excepteur sint occaecat cupidatat non proident!</h2>
-     </div>
-
-
-
-     ***Add Bulleted Points to Textblock***
-
-     (Change <ul></ul> to <ol></ol> to change from unordered list to ordered list. For more stylings, find the ul/li classes on style.css)
-
-     <div class= "ul">
-             <li>first</li>
-             <li>second</li>
-             <li>third</li>
-     </div>
-
-     -or- (try a nested list)
-
-     <div class="ul">
-         <li>Coffee</li>
-         <li>Tea
-           <ul>
-             <li>Black tea</li>
-             <li>Green tea</li>
-           </ul>
-          </li>
-         <li>Milk</li>
-      </div>
-
-
-
-      ***Add a Button***
-
-      (Clearly label button for accessibility purposes. If this is not possible, include: aria-label=”label for accessibility purposes.” For more stylings, find button class on style.css)
-
-      <div class="buttonbox">
-         <a href="https://pitt-fuego.github.io/Pitt-Fuego-Coding-Tools/" class="button" aria-label="">Button</a>
-      </div>
-
-
-
-
-     ***Embed YouTube Video***
-
-     <div class="video">
-       <div class="video-container">
-         <iframe width="560" height="315" src="https://www.youtube.com/embed/QzMJtLUncIg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-     </div>
-         <p>Add a caption.</p>
-     </div>
-
-
-
-     ***Add a Standard Image***
-
-     (Control image properties with inline width value.)
-
-     <img src="fuego.jpg" alt="describe the image HERE for accessibility purposes" style="width:30%;" class="center-img">
-     <p style="text-align: center"><em>Add a caption.</em></p>
-
-
-
-     ***Add Image Block with Padding and Caption*** (Control image properties with inline width value.)
-
-     <div class="imgageblock">
-         <img src="fuego.jpg" alt="describe the image HERE for accessibility purposes" style="width:100%;">
-          <p style="text-align: center"><em>Add a caption.</em></p>
-     </div>
-
-
-
-     ***Add a Photo Grid***
-
-     <div class="photogrid">
-     <div class="row">
-         <div class="column">
-             <img src="pgrid1.jpg" alt="describe the image HERE for accessibility purposes">
-             <img src="pgrid2.jpg" alt="describe the image HERE for accessibility purposes">
-         </div>
-         <div class="column">
-             <img src="pgrid3.jpg" alt="describe the image HERE for accessibility purposes">
-             <img src="pgrid4.jpg" alt="describe the image HERE for accessibility purposes">
-         </div>
-         <div class="column">
-             <img src="pgrid5.jpg" alt="describe the image HERE for accessibility purposes">
-             <img src="pgrid6.jpg" alt="describe the image HERE for accessibility purposes">
-         </div>
-     </div>
-         <p><em>Add a caption.</em></p>
-     </div>
-
-
-
-     ***Add a Parallax Window***
-
-     (To adjust window, find parallax class on style.css)
-
-     <div class="parallax"></div>
-
-
-
-     ***Add a Copyright Footer***
-
-     <div id="footer">
-       <p>Copyright Your Name, Year.</p>
-     </div>
-
-
-
-
-     ***Need something that's not here? Then you probably don't need it. But okay...go to w3 Schools***
-
-
-
-     Looking to publish this webtext in GitHub? Here are your next steps:
-
-     Sign in to GitHub. Create a new repository. Name it. Click “uploading an existing file,” then select/drag and drop all of your files... all of them, index.html. style.css, readme, and your image assets. Click "commit." Now go to your repository "settings." Scroll down to "Pages." Here you will change "source" from "none" to "main" branch. This will publish your webtext online. Copy your URL from this settings page...and now it's time to circulate your webtext! Peace and love only, Stephen Quigley, University of Pittsburgh, 2021.-->
+</body>
+</html>
