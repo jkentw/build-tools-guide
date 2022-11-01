@@ -84,7 +84,7 @@ Start it from the beginning? (y or n) y
 Breakpoint 2, new_ll () at ll.c:14
 14		linked_list* ll = malloc(sizeof(linked_list));
 (gdb) p ll
-$1 = (linked_list *) 0x5555555551b0 <__libc_csu_init><samp></pre>
+$1 = (linked_list *) 0x5555555551b0 <__libc_csu_init></samp></pre>
 <p>This tells use that <code>ll</code> has the value <code>0x5555555551b0</code>, which is a valid memory address. Place another breakpoint at line 16, where our error occurs and check its value there. Then, use the <code>c</code> command to continue execution.</p>
 <pre><samp>(gdb) b 16
 Breakpoint 2 at 0x555555555179: file ll.c, line 16.
@@ -94,9 +94,8 @@ Continuing.
 Breakpoint 2, new_ll () at ll.c:16
 16		ll->head = NULL;
 (gdb) p ll
-$2 = (linked_list *) 0x0
-</samp></pre>
-<p>At this point, we see that <code>ll</code> has the value <code>0x0</code>, which is NULL.</p>
+$2 = (linked_list *) 0x0</samp></pre>
+<p>At this point, we see that <code>ll</code> has the value <code>0x0</code>, which is <code>NULL</code>.</p>
 </td>
 </tr>
 </table>
