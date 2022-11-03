@@ -1,6 +1,7 @@
 # Guide to C/C++ Build Tools
 
 View the guide [here](https://jkentw.github.io/build-tools-guide/).
+If you are interested in contributing, leave a comment or create a pull request.
 
 ## MIT License
 
