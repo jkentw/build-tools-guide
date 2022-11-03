@@ -21,20 +21,18 @@ td {
 }
 
 nav {
+  background-color: #f1f1f1;
+  height: 100vh;
+  top:0;
   position: sticky;
-  top: 0;
-  float: left;
-  background: white;
-  padding: 20px;
+  width: 200px;
 }
 
 /* Style the list inside the menu */
 nav ul {
   list-style-type: none;
-  width: 200px;
   margin: 0;
   padding: 0;
-  background-color: #f1f1f1;
 }
 
 li a {
@@ -70,6 +68,28 @@ section::after {
     width: 100%;
     height: auto;
   }
+}
+
+pre {
+  padding: 0px 10px;
+}
+
+code, samp {
+  background-color: #eeeeee;
+  color: #111111;
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+pre code, pre samp {
+    display: block;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+pre samp {
+  background-color: #eeeeee;
+  color: #000000;
 }
 
 .hero-image {

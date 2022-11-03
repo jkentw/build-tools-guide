@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>page title</title>
+<title>Guide to C/C++ Build Tools: Makefiles</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="style.css">
@@ -28,17 +28,208 @@
       <li><a href="compilers.html">Compilers</a></li>
       <li><a href="makefiles.html">Makefiles</a></li>
       <li><a href="cmake.html">CMake</a></li>
-      <li><a href="misc.html">Other Tools</a></li>
-      <li><a href="conclusion.html">Next Steps</a></li>
+      <li><a href="misc.html">Debuggers</a></li>
+      <!--<li><a href="conclusion.html">Next Steps</a></li>-->
   </ul>
 </nav>
 </td>
 <td>
 <article>
 <h2>GNU Make</h2>
-  <h3>placeholder text</h3>
+  <h3><b>What is <code>make</code>?</b></h3>
+  <i>Make</i> is a utility that allows users to describe when and how to update files when other required files are changed. A common usage of <code>make</code> is to determine
+   what parts of a large program must be recompiled and then to issue the necessary commands to do so. Since each file requires other files to be updated, <code>make</code> 
+   lets you specify how those dependencies work, which eases the process of updating the files.
 
-  <h3>placeholder text</a>.</h3>
+  <h3><b>What do makefiles consist of?</b></a></h3>
+  There are five main elements inside a makefile.
+  <ol>
+    <li>Explicit Rules</li>
+    <li>Implicit Rules</li>
+    <li>Variable Definitions</li>
+    <li>Directives</li>
+    <li>Comments</li>
+  </ol>
+
+  <u>1. Explicit Rules</u><br>
+
+  Explicit Rules take the following form: <br>
+  <pre>
+    <code>
+    Target : Prerequisites<br>
+            Recipe
+    </code>
+  </pre>
+
+  Rules explain when a target is out of date and how to update the target if necessary. A target is out-of-date if one of two conditions have been met: The prerequisites
+  for the target do not exist, or the prerequisites for the target have been modified more recently than the target. <br>
+  <br>
+  In this case, the given recipe will tell <code>make</code> how to update the target. Recipes primarily consist of commands that the shell will execute. Each line of the
+  recipe must begin with a tab character. This can be changed through the .RECIPEPREFIX variable. <br>
+  <br>
+  An example rule is: <br>
+  <pre>
+    <code>
+      foo.o : foo.c defs.h<br>
+              cc -c -g foo.c
+    </code>
+  </pre>
+
+  In this case, foo.o is the target file to be updated, foo.c and defs.h are the prerequisistes that foo.o depends on, and "cc -c -g foo.c" is the recipe that tells <code>make</code>
+  how to update foo.o. <br>
+  <br>
+  A special type of target is the PHONY target. This is a target that <code>make</code> will only call when explicitly told to do so. The name of a phony target is not the
+  name of a file but just a speical recipe name. An exmaple of a common phony target is the <code>clean</code> target, which typically deletes the created .o files from a 
+  directory. Usually, there is no overalp between phony target names and the names of actual files, but in the case that overlap does occur simply set the name of the recipe
+  as a prerequisite for the .PHONY special target.
+
+  <pre>
+    <code>
+      .PHONY : clean <br>
+      <br>
+      clean : <br>
+              rm *.o temp
+    </code>
+  </pre>
+
+  <u>2. Implicit Rules</u><br>
+  <code>make</code> can infer certain rules which find common use for remaking target files. An example would be creating a .o file form a .c file.
+  <pre>
+    <code>
+      foo.o : foo.c 
+    </code>
+  </pre>
+
+  In order to avoid using an implicit rule for a target that does not have a recipe simply give an empty recipe with a semicolon. <br>
+  <br>
+  It is also possible to change how implicit rules work by changing certain predefined variables and flags.
+  <br>
+  <br>
+  <u>3. Variable Definitions</u><br>
+  Variables can be defined in makefiles in two ways: <br>
+  &#60;variable name&#62; &#61; &#60;string&#62; or &#60;variable name&#62; :&#61; &#60;string&#62; <br>
+  <br>
+  There is a slight difference between the two methods. The "&#61;" method is recursively expanded while the ":&#61;" method is simply expanded. The difference is in when the
+  contents of the variable are expanded. Recursively expanded variables are expanded every time the variable is substituted while simply expanded variables are expanded once
+  and only once. <br>
+  <br>
+  To use a variable in the makefile simply put $(&#60;variable name&#62;). Since variables in <code>make</code> work through strict textual substitution that means the text
+  the variable is set equal to will be substituted in whenever the above is put. This is where the difference between recurisively expanded and simply expanded variables is seen. <br>
+  <br>
+  Variable names can include any character that is not "#", ":", "&#61;", or whitespace. <br>
+  <br>
+  An example of variable use is: <br>
+  <pre>
+    <code>
+      objects = program.o foo.o utils.o <br>
+      program : $(objects) <br>
+             cc -o program $(objects) <br>
+      <br>
+      $(objects) : defs.h
+    </code>
+  </pre>
+  In this example the variable "objects" is the string "program.o foo.o utils.o". Then the "objects" variable is used as the prerequisistes for the program target. Similarly,
+  the example also shows that the files listed in the variable all have the prerequisiste file defs.h. <br>
+  <br>
+  <u>4. Directives</u><br>
+  Directives are instructions for instructing <code>make</code> to do something special while reading the makefile. Example directives are conditionals, reading another makefile,
+  or multiline variables. <br>
+  <br>
+  The exact syntax of a directive in the makefile depends on the directive in question. <br>
+  <br>
+  <u>Including Another Makefile</u><br>
+  The directive to include another makefile is indicated as such: <br>
+  <pre>
+    <code>
+      include &#60;filename&#62;
+    </code>
+  </pre>
+
+  <code>make</code> allows for whitespaces at the beginning of the line but not tabs (or the character specified by .RECIPEPREFIX). If that character is seen then <code>make</code>
+  will treat that line as a recipe. <br>
+  <br>
+  You can include variables in the filenames and when <code>make</code> see them it will expand those variables. <br>
+  <br>
+  To include multiple other makefiles simply separate the file names with whitespace. <br>
+  <pre>
+    <code>
+      include &#60;filename 1&#62; &#60;filename 2&#62; ...
+    </code>
+  </pre>
+  Another way to include other makefiles is through the variable MAKEFILES, but that will not be discussed in this manual. <br>
+  <br>
+  <u>Conditionals</u><br>
+  Conditionals are a way to control what parts of a makefile are followed and which are not depending on specified values. <br>
+  <br>
+  The basic syntax for a conditional in <code>make</code> is below:
+  <pre>
+    <code>
+      <i>Conditional Directive</i><br>
+      <i>Text-if-True</i><br>
+      endif
+    </code>
+  </pre>
+  The syntax for more complex conditionals is below:
+  <pre>
+    <code>
+      <i>Conditional Directive</i><br>
+      <i>Text-if-True</i><br>
+      else <br>
+      <i>Text-if-False</i><br>
+      endif
+    </code>
+  </pre>
+  Or
+  <pre>
+    <code>
+      <i>Conditional Directive</i><br>
+      <i>Text-if-True</i><br>
+      else <i>Conditional Directive Two</i><br>
+      <i>Text-if-Two-True</i><br>
+      endif
+    </code>
+  </pre>
+  There can be as many <code>else <i>Conditional</i></code> segments as you wish. <br>
+  <br>
+  The <code>ifeq</code> directive tests if <code>arg1</code> and <code>arg2</code> are the same after variable expansion. There are five ways to use this directive. <br>
+  <ol>
+    <li><code>ifeq (arg1, arg2)</code></li>
+    <li><code>ifeq "arg1", "arg2"</code></li>
+    <li><code>ifeq 'arg1', 'arg2'</code></li>
+    <li><code>ifeq "arg1", 'arg2'</code></li>
+    <li><code>ifeq 'arg1', "arg2"</code></li>
+  </ol>
+  The same syntaxes apply for the <code>ifdef &#60;variable name&#62;</code> conditional directive. The input of the directive is a variable name and the directive checks if the variable's 
+  value is non-empty. This directive also has a negative version <code>ifndef &#60;variable name&#62;</code>. If a variable has never been defined then it does not have a value. You can also 
+  pass a function that expands to the name of the variable, which will then be checked. <br>
+  <br>
+  <u>5. Comments</u><br>
+  Comments in makefiles function similarly to comments in typical programming languages. The comment, and the rest of the line that it appears on, is ignored by <code>make</code>. <br>
+  <br>
+  To start a comment use a "#" character. To have a comment run across multiple lines of the makefile follow the "#" character with a backslash and when you want to end the comment, escape it 
+  with another backslash. If you want to use a literal "#" character then it must be preceded by a backslash, "\#". <br>
+  <br>
+  There are some instances where you are not allowed to use a comment. If a "#" occurs inside a variable or funciton name then it will be treated literally. Similarly, if you place a comment inside 
+  of a recipe that line will be passed to the shell. That shell will then determine how to interpret that line. <br>
+  <br>
+  <h3><b>How to run <code>make</code>?</b></h3>
+  To run <code>make</code> simply call the command <samp>make</samp> from the command line. Calling <samp>make</samp> without specifying a target causes <code>make</code> to use the default target.
+  To call a specific <code>make</code> target simply write <samp>make</samp> and then the target's name. <br>
+  <pre>
+    <code>
+      make
+    </code>
+  </pre>
+  or
+  <pre>
+    <code>
+      make clean # example of calling a specific target
+    </code>
+  </pre>
+  For simplicity ensure that your makefile is called "makefile" or "Makefile". There are ways to change the name or use the other default options but these are the simplest.
+
+   <h3><b>Further Information</b></h3>
+   To view the complete guide on GNU Makefiles see <a href =https://www.gnu.org/software/make/manual/make.html#Reading>this link</a>. Examples and information have been taken from that section as well.
 </article>
 </td>
 </tr>
