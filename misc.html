@@ -1,10 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>page title</title>
+<title>C/C++ | Other Tools</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="style.css">
+<style>
+
+table.clean {
+  width: 100%;
+}
+
+table.clean tr td {
+    padding: 3px 10px;
+    border-spacing:0;
+}
+table.clean th {
+  padding: 3px 10px;
+  border-spacing:0;
+}
+
+th {
+  background-color: #5086D4;
+  font-size: 20px;
+  text-align: left;
+  font-weight: normal;
+}
+
+tr.even {
+  background-color: #ffffff;
+}
+
+tr.odd {
+  background-color: #95B2DB;
+}
+
+td.command {
+  width: 130px;
+  font-family: monospace;
+  font-size: 16px;
+}
+</style>
 </head>
 
 
@@ -34,14 +70,12 @@
 </td>
 <td>
 <article>
-<h2>Debuggers</h2>
-  <p>Debuggers are essential tools for effective programming, especially in low-level languages like C and C++. Debugging tools help you figure out where bugs and issues are in your program without having to use print statements. In this section, we'll be covering two prominent tools for command-line debugging: <i>GDB</i> and <i>Valgrind</i>.</p>
-<h2>GDB</h2>
-  <p>GDB (from GNU Debugger) is the GNU toolchain's dedicated debugger. GDB is most useful for tracking the execution of a program. It uses a system called <i>ptrace</i> to trace the execution of code, allowing you to change a process's memory and register while it's running.</p>
-<h3>Basics of GDB</h3>
-  <p>To get started, we'll examine some sample code for a basic Linked List that stores English words. We'll write code in small portions and use GDB to debug it as we go. We'll start with a simple method to create a new linked_list and we'll test that it works in main.</p>
-  <pre>
-<code>typdef struct ll_node {
+  <h2>Debuggers</h2>
+  <p>Debuggers are essential tools for effective programming, especially in low-level languages like C and C++. Debugging tools help you figure out where bugs and issues are in your program with a lot of versatility. In this section, we'll be covering two prominent tools for command-line debugging: <i>GDB</i> and <i>Valgrind</i>.</p>
+  <h2>GDB</h2>
+  <p>GDB (from <i>GNU Debugger</i>) is the GNU toolchain's dedicated debugger. GDB is most useful for tracking the execution of a program. It uses a system called <i>ptrace</i> to trace the execution of code, allowing you to change a process's memory and register while it's running.</p>
+  <p>To get started, examine the sample code below for a basic linked list that stores English words. It contains some structures along with a simple method called <code>new_ll</code> to create a new linked list. <code>main</code> calls <code>new_ll</code> and assigns its value to the <code>ll</code> variable.</p>
+  <pre><code>typdef struct ll_node {
   struct ll_node* next;
   char* word;
 } ll_node;
@@ -59,43 +93,189 @@ linked_list* new_ll() {
 
 int main() {
   linked_list* words = new_ll();
-}</code>
-</pre>
-<h3>Starting GDB</h3>
-<p>We use the <code>-g</code> flag when compiling, which tells the compiler to generate and retain debugging information in the executable. Then, we open the executable in gdb and use the command <code>r</code> to run it.</p>
-<pre>
-<samp>$ gcc ll.c -g -o ll
+}</code></pre>
+  <h3>Starting with GDB</h3>
+  <p>Use the <code>-g</code> flag when compiling to tell the compiler to generate and retain debugging information in the executable. Then, open the executable with GDB and use the <code>r</code> command to run it.</p>
+  <pre><samp>$ gcc ll.c -g -o ll
 $ gdb ll
 (gdb) r
 
 Program received signal SIGSEGV, Segmentation fault.
 0x000055555555517d in new_ll () at ll.c:16
-16		ll->head = NULL;</samp>
-</pre>
-<p>We get a segmentation fault error at line 16, which occurs when we try to access memory that we don't have access to. As <code>ll->head</code> is the only memory we try to access in this line, it's likely that <code>ll</code> points to the wrong place.</p>
-<h3>Breakpoints and Variables</h3>
-<p>To find where our code goes wrong, we can use breakpoints to view variables at various points in execution. We can start by using the <code>l</code> command, for list, to view the line numbers of our code. <code>l</code> will display the next 10 lines, while <code>l -</code> will display the previous 10. We'll check that malloc successfully allocated memory for our linked list structure by placing a breakpoint on line 14 with the <code>b</code> command and printing the value of <code>ll</code>.<p>
-<pre><samp>(gdb) b 14
-Breakpoint 2 at 0x555555555155: file ll.c, line 14.
+16		ll->head = NULL;</samp></pre>
+<p>The program reports a segmentation fault error at line 16, which occurs when a program tries to access memory that it doesn't have access to. As <code>ll->head</code> is the only memory the program tries to access in this line, it's likely that <code>ll</code> points to the wrong place.</p>
+<h3>Basic Usage</h3>
+<p>To find where the code goes wrong, use breakpoints to evaluate variables at during execution. Start by using the <code>l</code> command, for <code>list</code>, to view the line numbers of our code. <code>l</code> will display the next 10 lines, while <code>l -</code> will display the previous 10.</p>
+<pre><samp>(gdb) l
+11	} linked_list;
+12
+13	linked_list* new_ll() {
+14		linked_list* ll = malloc(sizeof(linked_list));
+15		if (ll = NULL) return NULL;
+16		ll->head = NULL;
+17		return ll;
+18	}
+19
+20	int main() {
+</samp></pre>
+<p>Breakpoints suspend program execution before a line of code is run. Check that malloc successfully allocated memory for our linked list structure by placing a breakpoint on line 15 with the <code>b</code> command and printing the value of <code>ll</code> with the <code>p</code> command</code>.<p>
+<pre><samp>(gdb) b 15
+Breakpoint 1 at 0x555555555163: file ll.c, line 15.
 (gdb) r
 The program being debugged has been started already.
 Start it from the beginning? (y or n) y
 
-Breakpoint 2, new_ll () at ll.c:14
-14		linked_list* ll = malloc(sizeof(linked_list));
+Breakpoint 1, new_ll () at ll.c:15
+15		if (ll = NULL) return NULL;
 (gdb) p ll
-$1 = (linked_list *) 0x5555555551b0 <__libc_csu_init></samp></pre>
-<p>This tells use that <code>ll</code> has the value <code>0x5555555551b0</code>, which is a valid memory address. Place another breakpoint at line 16, where our error occurs and check its value there. Then, use the <code>c</code> command to continue execution.</p>
-<pre><samp>(gdb) b 16
-Breakpoint 2 at 0x555555555179: file ll.c, line 16.
-(gdb) c
-Continuing.
-
-Breakpoint 2, new_ll () at ll.c:16
+$1 = (linked_list *) 0x5555555592a0</samp></pre>
+<p><code>ll</code> has the value <code>0x5555555592a0</code>, meaning that <code>malloc</code> successfully allocated memory. Otherwise, malloc would return <code>NULL</code>, represented by <code>0x0</code>. The segmentation fault occurred after the execution of line 16 so something must've gone wrong in the next few lines. Use the <code>n</code> command, for <code>next</code>, to go over code in the current stack frame line-by-line. <code>n</code> alone continues through the next line, while <code>n N</code> continues over the next N lines. Check the value of <code>ll</code> as you go.</p>
+<pre><samp>(gdb) n
 16		ll->head = NULL;
 (gdb) p ll
 $2 = (linked_list *) 0x0</samp></pre>
-<p>At this point, we see that <code>ll</code> has the value <code>0x0</code>, which is <code>NULL</code>.</p>
+<p>After the execution of line 15, <code>ll</code> takes the value <code>0x0</code>, which is <code>NULL</code>. On line 15, the <code>if</code> statement's condition reads <code>ll = NULL</code> while it should read <code>ll == NULL</code>. Instead of checking whether <code>ll</code> is <code>NULL</code>, the program sets <code>ll</code> to <code>NULL</code> and returns <code>NULL</code> to the condition, which evaluates to false. When the program attempts to write to <code>ll->head</code> in the next line, a segmentation fault occurs. Set <code>ll</code> to its intended value with the <code>set</code> command and continue execution from there with the the <code>c</code> command.</p>
+<pre><samp>(gdb) set ll=0x5555555592a0
+(gdb) c
+Continuing.
+[Inferior 1 (process 213004) exited normally]</samp></pre>
+<p>Now that you've found the bug, exit GDB with the <code>q</code> command. Fix the bug and then recompile. The code runs without issue.</p>
+<h3>GDB Summary</h3>
+<table class="clean">
+  <tr>
+    <th class="command">Command</td>
+    <th>Usage</td>
+  </tr>
+  <tr class="even">
+    <td class="command">b func</td>
+    <td>Sets a breakpoint at the beginning of function <code>func</code></td>
+  </tr>
+  <tr class="odd">
+    <td class="command">b N</td>
+    <td>Sets a breakpoint at the beginning of line <code>N</code></td>
+  </tr>
+  <tr class="even">
+    <td class="command">c</td>
+    <td>Continues execution of the program until it hits a breakpoint or exits</td>
+  </tr>
+  <tr class="odd">
+    <td class="command">d N</td>
+    <td>Removes breakpoint <code>N</code></td>
+  </tr>
+  <tr class="even">
+    <td class="command">f</td>
+    <td>Runs until the current function is finished</td>
+  </tr>
+  <tr class="odd">
+    <td class="command">l</td>
+    <td>Lists the next 10 lines of the source code</td>
+  </tr>
+  <tr class="even">
+    <td class="command">l -</td>
+    <td>Lists the previous 10 lines of the source code</td>
+  </tr>
+  <tr class="odd">
+    <td class="command">n</td>
+    <td>Runs the next line of the program in the current stack frame, does not step into functions</td>
+  </tr>
+  <tr class="even">
+    <td class="command">p var</td>
+    <td>Prints the value of variable <code>var</code></td>
+  </tr>
+  <tr class="odd">
+    <td class="command">r</td>
+    <td>Runs the program until it hits a breakpoint or the program exits</td>
+  </tr>
+  <tr class="even">
+    <td class="command">s</td>
+    <td>Runs the next line of the program</td>
+  </tr>
+  <tr class="odd">
+    <td class="command">s N</td>
+    <td>Runs the next <code>N</code> lines of the program</td>
+  </tr>
+  <tr class="even">
+    <td class="command">set var=val</td>
+    <td>Sets the value of variable <code>var</code> to <code>val</code></td>
+  </tr>
+  <tr class="odd">
+    <td class="command">q</td>
+    <td>Quits GDB</td>
+  </tr>
+</table>
+<p>For more information on GDB and its commands, visit the <a href="http://www.gdbtutorial.com/">GDB tutorial</a>.</p>
+<h2>Valgrind</h2>
+<p>Valgrind is a debugging tool specializing in memory debugging and detecting memory leaks. Valgrind acts as a virtual machine and none of the original program is run on the host machine. While this allows Valgrind to monitor memory very closely, it comes at substantial losses in performance. Valgrind's most used tool, <i>Memcheck</i>, keeps track of whether memory is valid and whether it is allocated after every instruction. Memcheck also includes its own implementation of C memory allocation that places memory guards and allows Memcheck to detect even very minor errors. In this section, we'll be focusing on using Memcheck to detect memory-related issues.</p>
+<h3>Debugging with Memcheck</h3>
+<p>Use the <code>-g</code> flag and <code>-O0</code> or <code>-O1</code> when compiling with GCC. The <code>-O</code> flags are optimizations flags, but using anything above <code>-O1</code> may cause Valgrind to produce phantom uninitialized value errors. We'll continue building on the linked list structure from the GDB section. After compiling, use Valgrind's <code>--leak-check=yes</code> option, which turns on the memory leak detector.</p>
+<pre><samp>$ gcc ll.c -g -O0 -o ll
+$ valgrind --leak-check=yes ./ll
+==202439== Memcheck, a memory error detector
+==202439== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==202439== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==202439== Command: ./ll
+==202439==
+==202439==
+==202439== HEAP SUMMARY:
+==202439==     in use at exit: 8 bytes in 1 blocks
+==202439==   total heap usage: 1 allocs, 0 frees, 8 bytes allocated
+==202439==
+==202439== 8 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==202439==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==202439==    by 0x10919E: new_ll (ll.c:16)
+==202439==    by 0x10926A: main (ll.c:21)
+==202439==
+==202439== LEAK SUMMARY:
+==202439==    definitely lost: 8 bytes in 1 blocks
+==202439==    indirectly lost: 0 bytes in 0 blocks
+==202439==      possibly lost: 0 bytes in 0 blocks
+==202439==    still reachable: 0 bytes in 0 blocks
+==202439==         suppressed: 0 bytes in 0 blocks
+==202439==
+==202439== For lists of detected and suppressed errors, rerun with: -s
+==202439== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+</samp></pre>
+<p>Memcheck reports any errors and gives us a summary of any memory issues present. The <code>202439</code> on the left is the process ID, which is generally unimportant. The heap summary gives us information regarding allocation and frees on the heap. In our program, we <code>malloc</code> once for the <code>linked_list</code> structure, which is 8 bytes. As we never <code>free</code> that block of memory, Memcheck reports 8 bytes allocated in the heap and 8 bytes definitely lost. Memcheck also gives a stack trace of where and how the memory was allocated, noting a <code>malloc</code> in <code>new_ll (ll.c:16)</code>, which was called by <code>main (ll.c:21)</code>.</p>
+<h3>Decoding Memcheck Error Messages</h3>
+<table class="clean">
+  <tr>
+    <th width="180px">Message</th>
+    <th>Explanation</th>
+  </tr>
+  <tr class="even">
+    <td>Illegal Read/Write</td>
+    <td>An illegal read or write occurs when your program reads or writes to an address in memory that it shouldn't. Memcheck cannot stop the memory access, but it will inform you directly before-hand. If the memory access would cause a segmentation fault, it still will.</td>
+  </tr>
+  <tr class="odd">
+    <td>Use of Uninitialized Value</td>
+    <td>When you try to read an uninitialized value, you have no way of knowing what data is in that spot in memory. If you <code>malloc</code> and immediately read from that spot, Memcheck will note that the values are allocated but uninitialized. It will complain once the unitialized data is being used in such a way that it would be externally visible.</td>
+  </tr>
+  <tr class="even">
+    <td>Illegal Free</td>
+    <td>When you try to <code>free</code> a memory block that has already been freed or you try to <code>free</code> in the middle of a block, Memcheck will complain about an illegal free. While an illegal <code>free</code> itself may not be harmful, it could be a sign of greater issues in a program.</td>
+  </tr>
+  <tr class="odd">
+    <td>Mismatched Deallocation Function</td>
+    <td>If you allocate a block of memory on the heap with <code>new</code>, it's important that you deallocate with <code>delete</code>. The same goes for <code>malloc</code> and <code>free</code>, <code>new[]</code> and <code>delete[]</code>. While this generally has no effect on Linux machines, it could break your code on other operating systems.</td>
+  </tr>
+  <tr class="even">
+    <td>Overlapping Source and Destination</td>
+    <td>There are a few C standard library functions that copy some data (often strings) from one block of memory to another. If the blocks of memory overlap, Memcheck will detect this and notify you. While this may not be an issue in some copying implementations, it could break your code in some circumstances.</td>
+  </tr>
+  <tr class="odd">
+    <td>Suspicious Argument Values</td>
+    <td>Memcheck notifies you if the program allocates a block of memory with an abnormal size, such as a negative or unexplicably large number of bytes.</td>
+  </tr>
+  <tr class="even">
+    <td>Memory Leak</td>
+    <td>With the <code>--leak-check==yes</code> option, Memcheck keeps track of all heap blocks that have been allocated and the pointers that point to those blocks. Memcheck then categorizes un-freed blocks by whether it believes they are <i>still reachable</i>, <i>definitely lost</i>, <i>indirectly lost</i>, or <i>possibly lost</i> based upon whether they are still pointed to.</td>
+  </tr>
+  <tr class="odd">
+    <td>Uninitialized System Call Argument</td>
+    <td>Memcheck checks the validity of any arguments when the program makes a system call. If the arguments are uninitialized or the arguments refer the system to an uninitialized buffer, Memcheck will report an error.</td>
+  </tr>
+</table>
+<p>For more information on Valgrind and Memcheck, visit the <a href="https://valgrind.org/docs/manual/index.html">Valgrind documentation</a>.
 </td>
 </tr>
 </table>
